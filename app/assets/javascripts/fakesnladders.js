@@ -314,6 +314,7 @@ FakesNLadders.prototype.hit = function(p) {
 
 function diceMove(face) {
 	var x,y,z;
+    console.log('diceMove(' + face + ')');
 	switch (face) {
 		case 6:
 			x = 0; y = 0; z = 0;
