@@ -237,6 +237,16 @@ FakesNLadders.prototype.init = function(redraw) {
         this_.updatePlayers(redraw);
     }
     setInterval(playerUpdateLoop, 2000);
+
+    this_.dice_enable = false;
+    this_.dice_face = 1;
+    setInterval(function() {
+        if (!this_.dice_enable || this_.dice_face <= 1) {
+            return;
+        }
+        this_.dice_face--;
+        diceMove(this_.dice_face);
+    }, DICE_INTERVAL);
 }
 
 FakesNLadders.prototype.initPlayer = function(userInfo, redraw) {
@@ -362,17 +372,8 @@ FakesNLadders.prototype.nextChoice = function() {
         this_.cur_choice_id = choice_id;
         document.getElementById('option-a').innerHTML = 'Option A<br /><br />' + htmlescape(option_a);
         document.getElementById('option-b').innerHTML = 'Option B<br /><br />' + htmlescape(option_b);
-        diceMove(6);
-        this_.dice_face = 6;
-        this_.dice_interval = window.setInterval(function() {
-            this_.dice_face--;
-            diceMove(this_.dice_face);
-            if (this_.dice_face <= 1) {
-                console.log('dice_interval stopping ' + this_.dice_interval + ' reached 1');
-                window.clearInterval(this_.dice_interval);
-            }
-        }, DICE_INTERVAL);
-        console.log('dice_interval started ' + this_.dice_interval);
+        this_.dice_face = 7;
+        this_.dice_enable = true;
     });
 }
 
@@ -382,9 +383,7 @@ FakesNLadders.prototype.makeChoice = function(choice) {
     document.getElementById('option-b').innerHTML = 'Option B';
     var this_ = this;
 
-    console.log('dice_interval stopping ' + this_.dice_interval + ' choice made');
-    window.clearInterval(this_.dice_interval);
-
+    this_.dice_enable = false;
     new GameRequest().checkChoice(this.cur_choice_id, choice, function(correct) {
         console.log('correct: ' + correct + ' dice face:' + this_.dice_face);
         this_.nextChoice();
