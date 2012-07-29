@@ -1,6 +1,7 @@
 var topic = '#leedshack';
 var tickManager;
 var TICK_INTERVAL = Math.floor(1000 / 30);
+var DICE_INTERVAL = 1000; /* milliseconds */
 var allowClick = true;
 var SQUARE_SIZE;
 
@@ -353,6 +354,15 @@ FakesNLadders.prototype.nextChoice = function() {
         this_.cur_choice_id = choice_id;
         document.getElementById('option-a').innerHTML = 'Option A<br /><br />' + htmlescape(option_a);
         document.getElementById('option-b').innerHTML = 'Option B<br /><br />' + htmlescape(option_b);
+        diceMove(6);
+        this_.dice_face = 6;
+        this_.dice_interval = window.setInterval(function() {
+            this_.dice_face--;
+            diceMove(this_.dice_face);
+            if (this_.dice_face == 1) {
+                window.clearInterval(this_.dice_interval);
+            }
+        }, DICE_INTERVAL);
     });
 }
 
@@ -361,8 +371,11 @@ FakesNLadders.prototype.makeChoice = function(choice) {
     document.getElementById('option-a').innerHTML = 'Option A';
     document.getElementById('option-b').innerHTML = 'Option B';
     var this_ = this;
+
+    window.clearInterval(this_.dice_interval);
+
     new GameRequest().checkChoice(this.cur_choice_id, choice, function(correct) {
-        console.log('correct: ' + correct);
+        console.log('correct: ' + correct + ' dice face:' + this_.dice_face);
         this_.nextChoice();
     });
 }
