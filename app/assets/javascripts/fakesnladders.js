@@ -1,7 +1,7 @@
 var topic = '#leedshack';
 var tickManager;
 var TICK_INTERVAL = Math.floor(1000 / 30);
-var DICE_INTERVAL = 1000; /* milliseconds */
+var DICE_INTERVAL = 2000; /* milliseconds */
 var allowClick = true;
 var SQUARE_SIZE;
 
