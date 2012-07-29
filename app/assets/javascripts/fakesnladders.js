@@ -2,6 +2,7 @@ var topic = '#leedshack';
 var tickManager;
 var TICK_INTERVAL = Math.floor(1000 / 30);
 var allowClick = true;
+var SQUARE_SIZE;
 
 function Ladder(fromGrid, toGrid) {
     this.fromGrid = fromGrid;
@@ -87,39 +88,65 @@ function Player(game, scoreGrid, image) {
 }
 
 Player.prototype.move = function(newScoreGrid) {
-    // TODO move horizontally, never diagonally
     var this_ = this;
     function completion() {
         newScoreGrid.doActions(this_);
     }
-    tickManager.addAnimation(new MoveAnimation(this,
-                new Point(newScoreGrid.position.x,
-                    newScoreGrid.position.y), 0.5), completion);
+    if (this.rect.y == newScoreGrid.position.y) {
+        this.moveStraightLine(newScoreGrid);
+    } else {
+        var grid;
+        var i;
+        for (i = this.scoreGrid.sqNo; i <= newScoreGrid.sqNo; i++) {
+            grid = this.game.getGrid(i);
+            if (grid.rect.y != this.scoreGrid.rect.y) {
+                break;
+            }
+        }
+        var this_ = this;
+        function moveUp() {
+            this_.moveStraightLine(this_.game.getGrid(i), finalMove);
+        }
+        function finalMove() {
+            this_.moveStraightLine(newScoreGrid);
+        }
+        if (i != this.scoreGrid.sqNo) {
+            this.moveStraightLine(this.game.getGrid(i - 1),
+                    moveUp);
+        }
+    }
 }
 
-Player.prototype.moveStraightLine = function(newScoreGrid) {
+Player.prototype.moveStraightLine = function(newScoreGrid, myCompletion) {
     var this_ = this;
-    function completion() {
+    function everythingCompletion() {
         newScoreGrid.doActions(this_);
+        this_.scoreGrid = newScoreGrid;
+    }
+    var completion;
+    if (myCompletion != null) {
+        completion = myCompletion;
+    } else {
+        completion = everythingCompletion;
     }
     tickManager.addAnimation(new MoveAnimation(this,
                 new Point(newScoreGrid.position.x,
-                    newScoreGrid.position.y), 0.5), completion);
+                    newScoreGrid.position.y), 1), completion);
 };
 
 Player.prototype.draw = function(context) {
-    context.drawImage(this.image, this.rect.x,
-            this.rect.y);
+    context.drawImage(this.image,
+            this.rect.x + SQUARE_SIZE / 2 - this.image.width / 2,
+            this.rect.y + SQUARE_SIZE / 2 - this.image.height / 2);
 };
 
 Player.prototype.hit = function(p) {
-    this.move(this.game.getGrid(4));
 };
 
-function Grid(sqNo, coordinates, squareSize, squaresToSide) {
+function Grid(sqNo, coordinates, squaresToSide) {
     this.sqNo = sqNo;
     this.coordinates = coordinates;
-    this.squareSize = squareSize;
+    this.squareSize = SQUARE_SIZE;
     this.squaresToSide = squaresToSide;
     this.position = new Point(this.coordinates.x * this.squareSize,
         this.coordinates.y * this.squareSize);
@@ -160,6 +187,7 @@ function FakesNLadders(layer, gridSize) {
     this.squaresToSide = 10;
     this.squareSize = this.gridSize / this.squaresToSide;
     this.playerMap = {};
+    SQUARE_SIZE = this.squareSize;
 }
 
 FakesNLadders.prototype.init = function(redraw) {
@@ -169,13 +197,13 @@ FakesNLadders.prototype.init = function(redraw) {
     for (var y = this.squaresToSide - 1; y >= 0; y--) {
         for (var x = this.squaresToSide - 1; x >= 0; x--) {
             this.grids.push(new Grid(sqNo++, new Point(x, y),
-                        this.squareSize, this.squaresToSide));
+                        this.squaresToSide));
             this.layer.addGameObject(this.grids[this.grids.length - 1]);
         }
         y--;
         for (var x = 0; x < this.squaresToSide; x++) {
             this.grids.push(new Grid(sqNo++, new Point(x, y),
-                        this.squareSize, this.squaresToSide));
+                        this.squaresToSide));
             this.layer.addGameObject(this.grids[this.grids.length - 1]);
         }
     }
