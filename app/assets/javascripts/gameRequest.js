@@ -70,7 +70,7 @@ GameRequest.prototype.sendRequest = function(method, url, sendObject, callback) 
                 eval("var resp = " + req.response); // ick
                 callback(resp);
             } else {
-                alert("Error: ready but status was " + req.statusText);
+                console.log("Error: ready but status was " + req.statusText);
             }
         }
     };
