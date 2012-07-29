@@ -359,10 +359,12 @@ FakesNLadders.prototype.nextChoice = function() {
         this_.dice_interval = window.setInterval(function() {
             this_.dice_face--;
             diceMove(this_.dice_face);
-            if (this_.dice_face == 1) {
+            if (this_.dice_face <= 1) {
+                console.log('dice_interval stopping ' + this_.dice_interval + ' reached 1');
                 window.clearInterval(this_.dice_interval);
             }
         }, DICE_INTERVAL);
+        console.log('dice_interval started ' + this_.dice_interval);
     });
 }
 
@@ -372,6 +374,7 @@ FakesNLadders.prototype.makeChoice = function(choice) {
     document.getElementById('option-b').innerHTML = 'Option B';
     var this_ = this;
 
+    console.log('dice_interval stopping ' + this_.dice_interval + ' choice made');
     window.clearInterval(this_.dice_interval);
 
     new GameRequest().checkChoice(this.cur_choice_id, choice, function(correct) {
