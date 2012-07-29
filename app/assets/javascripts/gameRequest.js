@@ -27,7 +27,11 @@ GameRequest.prototype.updateUserSquare = function(userId, newSquare, optionalCal
             optionalCallback(response.id, response.position);
         }
     };
-    this.sendRequest("PUT", url, {"position": newSquare}, reqCallback);
+    $.ajax(url, {
+        type: 'PUT',
+        dataType: 'json',
+        data: {'position': newSquare}
+    }).done(reqCallback);
 }
 
 // callback will be passed the question id, option a, and option b

@@ -80,8 +80,9 @@ Ladder.prototype.draw = function(context) {
 Ladder.prototype.hit = function(p) {
 };
 
-function Player(game, scoreGrid, image) {
+function Player(game, id, scoreGrid, image) {
     this.game = game;
+    this.id = id;
     this.scoreGrid = scoreGrid;
     this.image = image;
     this.rect = this.scoreGrid.rect;
@@ -122,6 +123,7 @@ Player.prototype.moveStraightLine = function(newScoreGrid, myCompletion) {
     function everythingCompletion() {
         newScoreGrid.doActions(this_);
         this_.scoreGrid = newScoreGrid;
+        new GameRequest().updateUserSquare(this_.id, this_.scoreGrid.sqNo);
     }
     var completion;
     if (myCompletion != null) {
@@ -243,11 +245,8 @@ FakesNLadders.prototype.initPlayer = function(userInfo, redraw) {
     playerImage.height = 40;
     playerImage.onload = redraw;
 
-    this.playerMap[userInfo.id] = new Player(this, this.getGrid(userInfo.position), playerImage);
+    this.playerMap[userInfo.id] = new Player(this, userInfo.id, this.getGrid(userInfo.position), playerImage);
     this.layer.addGameObject(this.playerMap[userInfo.id]);
-
-    var p = new Player(this, this.getGrid(0), playerImage);
-    this.layer.addGameObject(p);
 
     var this_ = this;
     document.getElementById('option-a').onclick = function() {
