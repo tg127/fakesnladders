@@ -274,7 +274,14 @@ FakesNLadders.prototype.updatePlayers = function(redraw) {
             
             if(player) {
                 var newSquare = userList[i].position;
-                player.move(this.getGrid(newSquare));
+                
+                // check for winners
+                if(newSquare > 99) {
+                    document.getElementById('end-area').innerHTML = "Player <img src="+userList[i].avatar_url+" height="40" width="40" /> has won!";
+                    player.move(this.getGrid(99));
+                } else {
+                    player.move(this.getGrid(newSquare));
+                }
             } else {
                 this_.initPlayer(userList[i], redraw);
             }
